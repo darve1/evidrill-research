@@ -1,0 +1,4 @@
+FICTIONAL FIXTURE. Route: technical. Version: release 2.0, 2025-11.
+Vendor release note: Windows support is experimental in version 2.0. Linux is the tested platform.
+The default search adapter uses a hosted API. Local inference does not imply network-free operation.
+The fixture contains no executed installation or runtime test. Static documentation does not establish runtime success.

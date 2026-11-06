@@ -1,0 +1,4 @@
+FICTIONAL FIXTURE. Route: general. Version: public statistical bulletin, 2025-11.
+In 2023, 40 of 100 surveyed teams reported a pilot. In 2025, 60 of 200 surveyed teams reported a pilot.
+The samples differ. Counts grew from 40 to 60, while the shares were 40% and 30%, respectively.
+These descriptive figures do not establish that Lumen caused an improvement.

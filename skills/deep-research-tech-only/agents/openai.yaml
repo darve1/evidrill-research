@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deep Research — Tech Only"
+  short_description: "기술·오픈소스 자료만 조사하고 버전·실행 근거·미확인 조건을 추적합니다"
+  default_prompt: "$deep-research-tech-only 이 주제를 기술·오픈소스 자료만으로 조사해줘."

@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "mode": "literature",
+  "routes": [
+    "literature"
+  ],
+  "question": "Does fictional Lumen outperform Baseline?",
+  "origins": [
+    {
+      "origin_id": "lx01",
+      "kind": "study",
+      "label": "lx01",
+      "source_ids": [
+        "s1"
+      ],
+      "rationale": "Explicit study ID in fictional input.",
+      "reviewer": "authored fixture",
+      "checked_at": "2026-11-06T00:00:00Z"
+    },
+    {
+      "origin_id": "ly02",
+      "kind": "study",
+      "label": "ly02",
+      "source_ids": [
+        "s2"
+      ],
+      "rationale": "Explicit study ID in fictional input.",
+      "reviewer": "authored fixture",
+      "checked_at": "2026-11-06T00:00:00Z"
+    }
+  ]
+}

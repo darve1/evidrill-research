@@ -1,0 +1,5 @@
+FICTIONAL FIXTURE. Route: literature. Version: journal publication v2, 2025-06.
+Title: Lumen on the Small-X benchmark. Study ID: LX-01.
+This publication reports the same experiment and same 20 test items as preprint v1, not a new study.
+Correction: Lumen succeeded on 18/20 items, which is 90%, not 95%. Baseline succeeded on 16/20 items (80%).
+The correction supersedes the percentage printed in v1. Generalization beyond Small-X was not tested.

@@ -1,0 +1,3 @@
+FICTIONAL FIXTURE. Route: community. Version: forum thread, 2025-11-01, post 1.
+User report: I tried Lumen 2.0 on Windows with dataset Q and saw a crash after ten minutes. I did not attach a log or rerun the same input.
+This is one person's unverified report. The thread has 500 upvotes; voters did not submit test results.

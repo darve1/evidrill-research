@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deep Research + Tech"
+  short_description: "학술 조사에 기술·오픈소스 자료를 추가하고 결론의 근거를 검토합니다"
+  default_prompt: "$deep-research-tech 이 주제를 학술 문헌과 기술·오픈소스 자료에서 함께 조사해줘."

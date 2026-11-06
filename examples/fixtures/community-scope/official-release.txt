@@ -1,0 +1,2 @@
+FICTIONAL FIXTURE. Route: technical. Version: release 2.0.
+The vendor describes Windows support as experimental and says it tested Linux. No test output is included in this fixture.

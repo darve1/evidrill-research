@@ -1,0 +1,5 @@
+FICTIONAL FIXTURE. Route: literature. Version: proceedings, 2025-11.
+Title: Two independent laboratory measurements.
+Section 1. Study ID: MEM-01. A separate team measured peak memory of 2 GB for Lumen on fixture workload W.
+Section 2. Study ID: MEM-02. Another team independently measured peak memory of 2 GB for Lumen on the same public workload W.
+The studies have separate measurements but share workload W. This is not evidence about other workloads or platforms.

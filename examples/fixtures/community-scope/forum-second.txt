@@ -1,0 +1,3 @@
+FICTIONAL FIXTURE. Route: community. Version: Q&A answer, 2025-11-03.
+A different writer says: I ran Lumen 2.0 on Linux with dataset R for an hour without a crash. No log is attached.
+Different platform, dataset and duration; this does not reproduce or refute the Windows report. Writer identity and independence are unverified.

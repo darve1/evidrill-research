@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+
+# Local research, third-party source snapshots and machine-specific records.
+/research/
+/verification/
+/project-split-manifest.json
+/AGENTS.md
+/docs/*
+!/docs/PUBLICATION.md
+!/docs/COMMUNITY_MODES.md
+
+# Generated personal studies and editor files.
+/studies/
+.idea/
+.vscode/
+*.pem
+*.key

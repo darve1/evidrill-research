@@ -1,0 +1,5 @@
+FICTIONAL FIXTURE. Route: literature. Version: conference proceedings, 2025-09.
+Title: Replication under distribution change. Study ID: LY-02.
+Different investigators tested dataset Large-Y with budget 1 unit on 100 items.
+Lumen succeeded on 70/100 items; Baseline succeeded on 75/100 items.
+These results concern Large-Y and do not directly invalidate the reported Small-X observations.

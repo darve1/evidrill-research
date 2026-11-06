@@ -1,0 +1,3 @@
+FICTIONAL FIXTURE. Route: general. Version: news story, 2025-11.
+This story repeats the vendor's release 2.0 announcement. It performed no independent platform test.
+Headline: Lumen arrives on every desktop. The story cites the release note as its only factual source.

@@ -1,0 +1,32 @@
+{
+  "integrity": "pass",
+  "review_readiness": "needs_review",
+  "truth_certified": false,
+  "semantic_validation": "reviewer-recorded judgments only; not independently verified by this script",
+  "errors": [],
+  "pending": [
+    "c2: claim remains unresolved",
+    "c2: stress judgment remains unresolved",
+    "c2: stress judgment remains unresolved"
+  ],
+  "route_coverage": {
+    "literature": {
+      "completed_queries": 1,
+      "failed_queries": 0,
+      "discovered_sources": 2,
+      "read_sources": 2,
+      "abstract_only_sources": 0
+    }
+  },
+  "metrics": {
+    "sources": 2,
+    "source_families": 2,
+    "unclassified_sources": 0,
+    "claims": 2,
+    "exact_quotes_found": 2,
+    "claim_evidence_pairs": 3,
+    "reviewed_pairs": 3,
+    "recorded_supporting_pairs": 1,
+    "recorded_support_fraction": 0.3333333333333333
+  }
+}

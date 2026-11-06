@@ -1,0 +1,2 @@
+{"evidence_id": "e1", "source_id": "s1", "origin_id": "lx01", "kind": "text", "locator": "line 4", "quote": "Correction: Lumen succeeded on 18/20 items, which is 90%, not 95%. Baseline succeeded on 16/20 items (80%)."}
+{"evidence_id": "e2", "source_id": "s2", "origin_id": "ly02", "kind": "text", "locator": "line 4", "quote": "Lumen succeeded on 70/100 items; Baseline succeeded on 75/100 items."}

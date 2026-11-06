@@ -1,0 +1,5 @@
+FICTIONAL FIXTURE. Route: literature. Version: preprint v1, 2025-01.
+Title: Lumen on the Small-X benchmark. Study ID: LX-01.
+Experiment: 20 independent test items, dataset Small-X, fixed budget 1 unit.
+Lumen succeeded on 18/20 items (reported as 95% in this preprint).
+Baseline succeeded on 16/20 items. This single small benchmark does not establish general superiority.
