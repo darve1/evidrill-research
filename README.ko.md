@@ -6,6 +6,8 @@
 
 프로젝트 이름은 Evidrill Research이며, 설치 후 선택할 스킬 이름은 아래의 `deep-research` 계열이다.
 
+**Codex와 Claude Code가 같은 스킬 파일과 조사 규칙을 사용한다.**
+
 스킬 목록에서 이름을 선택한 뒤 평소처럼 “이걸로 자료조사해줘”라고 요청하면 된다.
 
 | 선택할 이름 | 조사 범위 |
@@ -17,7 +19,7 @@
 | `deep-research-comu-only` | 커뮤니티만 |
 | `deep-research-all` | 학술 + 기술·오픈소스 + 범용 웹 + 커뮤니티 |
 
-앱이 `$` 호출을 제공한다면 다음처럼 쓸 수 있다. 스킬 선택기의 키보드 조작은 앱에 따른다.
+Codex에서는 아래처럼 `$이름`으로, Claude Code에서는 같은 이름에 `/`를 붙여 호출한다. 스킬 선택기가 있는 앱에서는 목록에서 선택해도 된다.
 
 ```text
 $deep-research 이 주제의 연구 결과와 반대 근거를 조사해줘.
@@ -46,9 +48,22 @@ $deep-research-all 이 주제를 학술·기술·일반 웹·커뮤니티에서 
 ```text
 git clone https://github.com/darve1/evidrill-research.git
 cd evidrill-research
+python -X utf8 scripts/install_skills.py --target both
 ```
 
-개인 스킬 폴더(예: `~/.codex/skills`)에 `skills/` 안의 **여섯 폴더를 나란히** 설치한다. 추가 진입점들은 공통 deep-research에 의존한다. 기존 설치가 있으면 변경을 비교하고 필요한 파일만 갱신한다. 다른 스킬이나 전역 설정은 바꿀 필요가 없다.
+`--target codex`, `--target claude`, `--target both` 중 고른다. 기본 경로는 Codex `~/.agents/skills`, Claude Code `~/.claude/skills`다. 설치기는 **여섯 폴더를 나란히** 복사하고 해시를 확인한다. `--dry-run`은 파일을 쓰지 않고 설치 계획만 검사한다. 기존 파일 내용이 다르면 복사 전에 중단하며, 다른 스킬이나 전역 설정을 바꾸지 않는다.
+
+기존 Codex 설치가 `~/.codex/skills`에 있다면 `--target codex --skills-dir "~/.codex/skills"`로 그 경로를 사용하고 Claude는 별도로 설치한다. 두 Codex 경로에 같은 이름을 중복 설치하지 않는다. 기존 설치 갱신·프로젝트별 설치·검증 범위는 [호환성 안내](docs/COMPATIBILITY.md)를 참고한다.
+
+스킬이 보이지 않으면 새 세션에서 다음처럼 호출한다.
+
+| 환경 | 입력 예시 |
+| --- | --- |
+| Codex | `$deep-research 이 주제를 논문·문헌 중심으로 조사해줘.` |
+| Claude Code | `/deep-research 이 주제를 논문·문헌 중심으로 조사해줘.` |
+| Claude Code 전체 범위 | `/deep-research -all 이 주제를 모든 자료 경로로 조사해줘.` |
+
+`/deep-research-tech-only`, `/deep-research-comu`, `/deep-research-comu-only` 등 여섯 진입점과 범위 옵션은 두 환경에서 같다.
 
 helper는 Python 3.10+와 표준 라이브러리를 사용한다. 모델·검색은 실행 환경의 기존 도구를 사용하며 새 API 키를 요구하지 않는다. 기존 모델/검색 서비스의 비용까지 무료라는 뜻은 아니다.
 

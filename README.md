@@ -2,7 +2,7 @@
 
 **Trace the evidence. Challenge the conclusion.**
 
-A research skill that links claims to preserved source passages, searches for counterevidence, and shows what remains when a decisive evidence origin is removed.
+A research skill for **Codex and Claude Code** that links claims to preserved source passages, searches for counterevidence, and shows what remains when a decisive evidence origin is removed.
 
 [한국어](README.ko.md) · [Synthetic example](examples/README.md) · [MIT License](LICENSE)
 
@@ -28,7 +28,7 @@ $deep-research-comu-only Investigate community experiences with this approach.
 $deep-research-all Explore the topic across all supported source routes.
 ```
 
-The invocation prefix depends on your app. All-source research reports access limits and missing routes; it does not promise exhaustive internet coverage.
+These examples use Codex's `$` invocation. In Claude Code, use `/deep-research` or the corresponding `/deep-research-*` entry. In apps with a skill picker, select the name there. All-source research reports access limits and missing routes; it does not promise exhaustive internet coverage.
 
 ## What you get
 
@@ -44,9 +44,19 @@ For example, two papers can describe the same experiment. Removing that experime
 ```text
 git clone https://github.com/darve1/evidrill-research.git
 cd evidrill-research
+python -X utf8 scripts/install_skills.py --target both
 ```
 
-Copy all **six sibling folders** from `skills/` into your personal skills directory, such as `~/.codex/skills`. Compare existing customizations before replacing files. The five scope entries reuse the canonical `deep-research` folder and must remain beside it.
+Choose `--target codex`, `--target claude` or `--target both`. Defaults are `~/.agents/skills` for Codex and `~/.claude/skills` for Claude Code. The installer copies all **six sibling folders**, checks their hashes and preserves unrelated files. `--dry-run` previews without writing. Existing files with different contents stop the entire preflight; they are never overwritten.
+
+If you already use `~/.codex/skills`, keep that installation in place with `--target codex --skills-dir "~/.codex/skills"` and install Claude separately. Avoid duplicate names in both Codex locations. Custom and project directories, updating an existing install, and verification limits are covered in [compatibility and installation](docs/COMPATIBILITY.md).
+
+Start a new session if the skill does not appear, then try:
+
+| Host | Example prompt |
+| --- | --- |
+| Codex | `$deep-research -all Research this topic and its counterevidence.` |
+| Claude Code | `/deep-research -all Research this topic and its counterevidence.` |
 
 Helpers require Python 3.10+ and its standard library. The skill uses your agent's existing search/file tools and does not require an additional API key. Model and search-service costs depend on your environment. Local file tests do not verify the app's picker refresh behavior.
 

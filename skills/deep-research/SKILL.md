@@ -11,6 +11,8 @@ description: "Research literature and conflicting evidence with traceable source
 
 스킬을 선택하고 평소처럼 조사 요청을 쓰면 시작한다. 모드를 고르는 추가 승인 질문은 하지 않는다.
 
+Codex에서는 `$deep-research`, Claude Code에서는 `/deep-research`로 호출한다. 접두어는 호스트의 호출 문법이며 아래 범위 선택은 두 환경에서 같다. 상대 링크는 현재 작업 폴더가 아닌 이 `SKILL.md`의 위치를 기준으로 연다.
+
 | 사용자의 선택 | 실제 조사 범위 | helper init 옵션 |
 | --- | --- | --- |
 | `deep-research` 또는 옵션 없는 호출 | **논문·학술지·학회·학술 문헌** | 없음 |
@@ -46,7 +48,7 @@ description: "Research literature and conflicting evidence with traceable source
 
 ## 기록 검사와 완료
 
-`SKILL_DIR`은 이 파일이 있는 폴더다. 경로를 따옴표로 감싸서 실행한다.
+`SKILL_DIR`은 공통 `deep-research/SKILL.md`가 있는 폴더의 실제 절대 경로로 바꾼다(자동 환경 변수가 아니다). `STUDY_DIR`은 사용자의 작업 공간 안 연구 폴더로 바꾼다. 설치 폴더에 연구 결과를 쓰지 않는다. 경로를 따옴표로 감싸서 실행한다.
 
 ```text
 python -X utf8 "SKILL_DIR/scripts/research_ledger.py" init --root "STUDY_DIR" --question "조사 질문"

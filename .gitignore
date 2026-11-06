@@ -16,6 +16,7 @@ Thumbs.db
 /docs/*
 !/docs/PUBLICATION.md
 !/docs/COMMUNITY_MODES.md
+!/docs/COMPATIBILITY.md
 
 # Generated personal studies and editor files.
 /studies/

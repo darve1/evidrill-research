@@ -8,18 +8,11 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from install_skills import PACKAGES
+
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / 'skills/deep-research'
 EVIDENCE = ROOT / 'research/deep-research-skill-2026-11-06'
-FILES = ['SKILL.md', 'agents/openai.yaml', 'references/records.md',
-         'references/verification.md', 'references/provenance.md', 'scripts/research_ledger.py',
-         'references/literature.md', 'references/technical.md', 'references/general.md', 'references/community.md']
-PACKAGES = {'deep-research': FILES,
-            'deep-research-tech': ['SKILL.md', 'agents/openai.yaml'],
-            'deep-research-all': ['SKILL.md', 'agents/openai.yaml'],
-            'deep-research-tech-only': ['SKILL.md', 'agents/openai.yaml'],
-            'deep-research-comu': ['SKILL.md', 'agents/openai.yaml'],
-            'deep-research-comu-only': ['SKILL.md', 'agents/openai.yaml']}
 
 
 def main():
@@ -28,6 +21,8 @@ def main():
     parser.add_argument('--include-private-evidence', action='store_true',
                         help='Also check locally preserved historical cases (not included in the public repository).')
     args = parser.parse_args()
+    if args.installed_skill:
+        args.installed_skill = args.installed_skill.expanduser().resolve()
     errors = []
     hashes = []
     for package, names in PACKAGES.items():
@@ -46,7 +41,7 @@ def main():
 
     local_links = 0
     for path in [ROOT / 'README.md', ROOT / 'README.ko.md', ROOT / 'CONTRIBUTING.md',
-                 ROOT / 'docs/PUBLICATION.md', ROOT / 'docs/COMMUNITY_MODES.md',
+                 ROOT / 'docs/PUBLICATION.md', ROOT / 'docs/COMMUNITY_MODES.md', ROOT / 'docs/COMPATIBILITY.md',
                  *(ROOT / 'skills').rglob('*.md'), *(ROOT / 'examples').rglob('*.md')]:
         if not path.exists():
             errors.append(f'Missing documentation: {path.name}')
