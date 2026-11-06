@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Activate repository rules requiring PRs for `main` and the default branch, with no bypass actors, no force pushes or deletion, resolved review threads and linear history. Retain squash-only merging and disabled auto-merge/Actions.
+- Document explicit user instructions before an agent merges a PR. Keep required reviewer approvals at zero for the single-maintainer setup, and record that shared GitHub credentials cannot enforce a human/agent distinction.
+- Add local checkout safeguards against implicit pushes and direct pushes to `main`/`master`. Verification reads the active server rules and exercises the local push guard without attempting a remote `main` update.
+
 ## 0.1.1 — 2026-11-06
 
 - Support Codex and Claude Code using the same six skill packages; document `$` and `/` invocation with the same default literature scope and all existing scope options.
