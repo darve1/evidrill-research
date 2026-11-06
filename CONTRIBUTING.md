@@ -16,3 +16,5 @@ For research behavior changes, include a bounded, reproducible example using sel
 Record user-visible changes in [CHANGELOG.md](CHANGELOG.md). Keep credentials, private research, personal paths and third-party full-text snapshots out of commits. See the [publication boundary](docs/PUBLICATION.md).
 
 GitHub Actions are disabled for this repository. Use local verification; do not add workflows without the maintainer's explicit authorization. Open issues for bugs or ideas and pull requests for concrete changes.
+
+Send changes through a topic branch and a pull request. The active default-branch ruleset requires a PR, resolved review threads and linear history; it blocks force pushes and branch deletion, with no bypass actors. Only squash merging is enabled, and auto-merge is disabled. Agents must wait for the user's explicit instruction for that PR before merging, and must not disable or bypass these protections. The repository currently has one maintainer, so a second reviewer's approval is not required; this is a workflow requirement, not a GitHub-enforced distinction between a person and an agent using the same account.

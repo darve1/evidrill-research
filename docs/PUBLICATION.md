@@ -30,3 +30,7 @@ The demo intentionally returns exit 2 from `check`, `stress` and `render`: its b
 ## Repository settings
 
 The initial setup uses public visibility, `main` as the default branch, issues enabled, wiki/projects disabled, squash merging and automatic deletion of merged branches. GitHub Actions are disabled, and no workflow files are shipped. All release verification runs locally. Settings on GitHub can change independently of this document.
+
+On 2026-11-06, after publication, the [Protect main ruleset](https://github.com/darve1/evidrill-research/rules/26689918) was activated for `main` and the default branch with no bypass actors. It requires pull requests, resolution of review threads and linear history, and blocks force pushes and deletion. Auto-merge remains disabled; squash is the only enabled merge method. Required external approvals are zero to support the single-maintainer repository, and there are no required CI status checks while Actions are disabled.
+
+Agents must present a PR and wait for an explicit instruction to merge that PR. GitHub cannot distinguish the human from an agent authenticated as the same owner, and an administrator can edit repository rules; the no-merge-without-instruction requirement is also recorded in local agent instructions. The maintainer's current checkout additionally rejects implicit `git push` and has a local pre-push guard against `main`/`master` targets. These local safeguards are not automatically installed by cloning this repository.
