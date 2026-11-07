@@ -61,9 +61,13 @@ def digest(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+EVIDENCE_BASIS = ('source_id', 'kind', 'locator', 'quote', 'visual_review')
+
+
 def evidence_digest(evidence):
-    """Fingerprint of the evidence row a review judged; replacing the row makes the review stale."""
-    return digest(json.dumps(evidence, sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))
+    """Fingerprint of what a review judged: the passage and where it is. Reclassifying its origin is not a change."""
+    basis = {k: evidence.get(k) for k in EVIDENCE_BASIS}
+    return digest(json.dumps(basis, sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))
 
 
 def inside(root, name):
@@ -724,7 +728,13 @@ def analyze_claim(data, metadata, claim):
     support_origins = [oid for oid, eids in groups.items() if any(e in support for e in eids)]
     structure = ('no_recorded_support' if not support else 'independence_unknown' if unknown else
                  'single_origin' if len(support_origins) == 1 else 'multiple_origins')
-    basis = {'claim': {k: v for k, v in claim.items() if k != 'stress_test'},
+    # A review's evidence fingerprint is derived from evidence already in the basis, so it is left out.
+    reviews = [{k: v for k, v in r.items() if k != 'evidence_sha256'} if isinstance(r, dict) else r
+               for r in claim.get('reviews', [])]
+    claim_basis = {k: v for k, v in claim.items() if k != 'stress_test'}
+    if 'reviews' in claim_basis:
+        claim_basis['reviews'] = reviews
+    basis = {'claim': claim_basis,
              'evidence': [data['evidence'][e] for e in ids],
              'sources': [data['sources'][sid] for sid in sorted({data['evidence'][e]['source_id'] for e in ids})],
              'origins': [origins[o] for o in sorted(groups)],
@@ -768,6 +778,7 @@ def validate_stress_review(claim, analysis, errors, pending):
     reviewed, exemption = set(), False
     for review in reviews:
         oid, judgment = review.get('excluded_origin_id'), review.get('judgment')
+        stale = review.get('basis_sha256') != analysis['basis_sha256']
         if judgment not in STRESS_JUDGMENTS:
             errors.append(f'{cid}: invalid stress judgment')
         if review.get('method', 'self') not in REVIEW_METHODS:
@@ -776,14 +787,17 @@ def validate_stress_review(claim, analysis, errors, pending):
             if 'excluded_origin_id' not in review or oid is not None or len(reviews) != 1:
                 errors.append(f'{cid}: stress exemption must be a single null-origin review')
             exemption = True
-        elif not isinstance(oid, str) or oid not in scenario_ids or oid in reviewed:
+        elif not isinstance(oid, str) or oid in reviewed:
             errors.append(f'{cid}: invalid/duplicate excluded_origin_id')
+        elif oid not in scenario_ids:
+            if not stale:  # after evidence is re-linked an old review may name a gone scenario: stale, not broken
+                errors.append(f'{cid}: invalid/duplicate excluded_origin_id')
         else:
             reviewed.add(oid)
         for key in ('reviewer', 'checked_at', 'rationale', 'basis_sha256'):
             if not isinstance(review.get(key), str) or not review[key].strip():
                 errors.append(f'{cid}: stress review missing/non-text {key}')
-        if review.get('basis_sha256') != analysis['basis_sha256']:
+        if stale:
             pending.append(f'{cid}: stale stress review; current claim/evidence/scope differs')
         if judgment == 'unresolved':
             pending.append(f'{cid}: stress judgment remains unresolved')
@@ -868,6 +882,11 @@ def _commit(root, table, row, *, operation, reason=None, require_existing=False,
                 raise ValueError(f'{identity} already exists; pass --replace with --reason to change it')
             if identity in candidate[table] and previous is None:
                 raise ValueError(f'{identity} appears twice in this batch')
+            if table == 'claims' and operation in ('add', 'replace') and isinstance(item.get('reviews'), list):
+                for entry in item['reviews']:  # reviews written inline get the same fingerprint as `review`
+                    if isinstance(entry, dict) and 'evidence_sha256' not in entry \
+                            and isinstance(entry.get('evidence_id'), str) and entry['evidence_id'] in data['evidence']:
+                        entry['evidence_sha256'] = evidence_digest(data['evidence'][entry['evidence_id']])
             candidate[table][identity] = item
         if len(rows) > 1 and previous is not None:
             raise ValueError('Batches only add new rows; replace rows one at a time')
@@ -1030,8 +1049,9 @@ def stress_review(root, claim_id, origin_id, judgment, rationale, selection_rati
              'checked_at': now(), 'rationale': rationale, 'basis_sha256': analysis['basis_sha256']}
     earlier = recorded.get('reviews', [])
     reviews = [] if judgment == 'not_applicable' else [
-        r for r in earlier if r.get('excluded_origin_id') not in (origin_id, None)]
-    replaced = len(reviews) != len(earlier)
+        r for r in earlier if r.get('excluded_origin_id') not in (origin_id, None)
+        and r.get('excluded_origin_id') in {s['excluded_origin_id'] for s in analysis['scenarios']}]
+    replaced = len(reviews) != len(earlier)  # replaced, or dropped because its scenario no longer exists
     recorded['reviews'] = reviews + [entry]
     claim['stress_test'] = recorded
     result = _commit(root, 'claims', claim, operation='stress-review', reason='stress review recorded',
@@ -1167,7 +1187,7 @@ def _json_rows(args):
         value = json.loads(text)
     except json.JSONDecodeError:
         try:
-            value = [json.loads(line) for line in text.splitlines() if line.strip()]
+            value = [json.loads(line) for line in text.split('\n') if line.strip()]
         except json.JSONDecodeError as error:
             raise ValueError(f'Not JSON, a JSON array or JSON Lines: {error}') from None
     rows = value if isinstance(value, list) else [value]

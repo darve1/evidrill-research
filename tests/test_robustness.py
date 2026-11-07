@@ -5,6 +5,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 from support import ROOT, StudyFixture, cli, ledger
@@ -143,6 +144,30 @@ class QuoteTests(unittest.TestCase):
         pending = ledger.check(self.root)['pending']
         self.assertIn('c1/e1: evidence changed after review; review it again', pending)
 
+    def test_inline_reviews_get_a_fingerprint_and_origin_changes_do_not_stale_them(self):
+        claim = dict(self.study.claims[0], claim_id='c2', importance='context')
+        claim.pop('stress_test', None)
+        ledger.add_row(self.root, 'claims', claim)
+        self.assertIn('evidence_sha256', ledger.load(self.root)[1]['claims']['c2']['reviews'][0])
+        ledger.add_origin(self.root, StudyFixture.origin('b'))
+        ledger.add_row(self.root, 'evidence', dict(self.study.evidence[0], origin_id='b'), reason='reclassify')
+        self.assertFalse(any('c2/e1: evidence changed' in p for p in ledger.check(self.root)['pending']))
+        ledger.add_row(self.root, 'evidence', dict(self.study.evidence[0], origin_id='b', locator='line 2, end'),
+                       reason='more precise location')
+        self.assertIn('c2/e1: evidence changed after review; review it again', ledger.check(self.root)['pending'])
+        self.assertIn('c1: stale stress review; current claim/evidence/scope differs', ledger.check(self.root)['pending'])
+        ledger.stress_review(self.root, 'c1', 'b', 'narrowed', 'Only origin b remains.')
+        stress = ledger.load(self.root)[1]['claims']['c1']['stress_test']['reviews']
+        self.assertEqual([r['excluded_origin_id'] for r in stress], ['b'])
+        self.assertFalse(any(p.startswith('c1: stale') for p in ledger.check(self.root)['pending']))
+
+    def test_json_lines_input_keeps_line_separators_inside_strings(self):
+        rows = self.study.temp / 'rows.jsonl'
+        rows.write_text('\n'.join(json.dumps(dict(self.study.queries[0], query_id=q, query=q + ' text'),
+                                             ensure_ascii=False) for q in ('q7', 'q8')), encoding='utf-8')
+        code, payload, _ = cli('add', '--root', self.root, '--table', 'queries', '--json-file', rows)
+        self.assertEqual((code, payload.get('ids')), (0, ['q7', 'q8']))
+
     def test_sniffing_and_byte_order_marks(self):
         self.assertEqual(ledger.sniff(b'<!DOCTYPE html><html>login</html>', 'text/html', '/paper.pdf'), 'html')
         self.assertEqual(ledger.sniff(b'%PDF-1.4 ...', '', '/download'), 'pdf')
@@ -182,6 +207,26 @@ class LegacyLinkTests(unittest.TestCase):
         self.assertEqual(result['legacy_removed'], [])
         self.assertTrue((self.outside / 'cache/empty').is_dir())
         self.assertTrue((self.skills / 'deep-research').exists())
+
+    def test_undeletable_files_and_plain_file_packages_are_reported(self):
+        legacy_bundle(self, self.skills)
+        (self.skills / 'deep-research-all').rename(self.temp / 'moved')
+        (self.skills / 'deep-research-all').write_text('not a folder', encoding='utf-8')
+        target = self.skills / 'deep-research/SKILL.md'
+        original = Path.unlink
+
+        def unlink(path, *args, **kwargs):
+            if path == target:
+                raise PermissionError(13, 'Permission denied')
+            return original(path, *args, **kwargs)
+
+        with mock.patch.object(Path, 'unlink', unlink):
+            result = installer.remove_legacy(self.skills)
+        kept = result['legacy_kept_modified_or_unknown']
+        self.assertIn('deep-research-all (not a folder)', kept)
+        self.assertIn('deep-research/SKILL.md (could not remove: Permission denied)', kept)
+        self.assertTrue(target.exists())
+        self.assertFalse((self.skills / 'deep-research-tech').exists())
 
     def test_link_inside_a_legacy_folder_is_not_entered(self):
         legacy_bundle(self, self.skills)

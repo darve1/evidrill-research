@@ -60,6 +60,9 @@ def remove_legacy(root: Path, *, dry_run: bool = False) -> dict:
         if _linked(directory):
             kept.append(f'{package} (linked folder, not entered)')
             continue
+        if directory.exists() and not directory.is_dir():
+            kept.append(f'{package} (not a folder)')
+            continue
         if not directory.is_dir():
             continue
         files, linked = [], []
@@ -67,16 +70,22 @@ def remove_legacy(root: Path, *, dry_run: bool = False) -> dict:
         kept += [f'{p.relative_to(root).as_posix()} (link, not entered)' for p in linked]
         for path in files:
             relative = path.relative_to(root).as_posix()
-            if hashlib.sha256(path.read_bytes()).hexdigest() in known.get(relative, []):
-                removed.append(relative)
+            if hashlib.sha256(path.read_bytes()).hexdigest() not in known.get(relative, []):
+                kept.append(relative)
+                continue
+            try:
                 if not dry_run:
                     path.unlink()
-            else:
-                kept.append(relative)
+                removed.append(relative)
+            except OSError as error:
+                kept.append(f'{relative} (could not remove: {error.strerror or error})')
     if not dry_run:
         for folder in folders:  # children come before parents
-            if not any(folder.iterdir()):
-                folder.rmdir()
+            try:
+                if not any(folder.iterdir()):
+                    folder.rmdir()
+            except OSError:
+                pass  # a folder that cannot be removed stays; its files are already reported
     return {'legacy_removed': removed, 'legacy_kept_modified_or_unknown': kept}
 
 
