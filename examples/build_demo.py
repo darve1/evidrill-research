@@ -22,7 +22,7 @@ def build(root):
     (root / 'brief.md').write_text(
         '# Brief\n\nKey claims: (1) the Small-X result, (2) general superiority.\n'
         'Cut-off: the supplied fictional corpus. Exclusions: anything outside examples/fixtures/research-corpus.\n',
-        encoding='utf-8')
+        encoding='utf-8', newline='\n')
     for sid, name, title in (('s1', 'paper-a-journal.txt', 'LX-01 journal article'),
                              ('s2', 'paper-b-conference.txt', 'LY-02 conference paper'),
                              ('s3', 'paper-a-preprint.txt', 'LX-01 preprint')):
@@ -74,9 +74,9 @@ def build(root):
                          'Removes the only partial support.', reviewer=REVIEWER)
     ledger.stress_review(root, 'c2', 'ly02', 'unresolved', 'Only the 20-item Small-X result remains; it is partial.',
                          'Removing the contrary origin still leaves no full support.', reviewer=REVIEWER)
-    (root / 'report.md').write_text(ledger.render(root), encoding='utf-8')
+    (root / 'report.md').write_text(ledger.render(root), encoding='utf-8', newline='\n')
     report = ledger.check(root)
-    (root / 'validation.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    (root / 'validation.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
     print(json.dumps({'review_readiness': report['review_readiness'], 'pending': report['pending'],
                       'truth_certified': report['truth_certified']}, ensure_ascii=False, indent=2))
 

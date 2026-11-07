@@ -138,13 +138,13 @@ def initialize(root, mode=None, tech=False, all_sources=False, question='', *,
         raise ValueError('Study must be new or empty; existing records are never overwritten')
     root.mkdir(parents=True, exist_ok=True)
     for table in TABLES:
-        (root / f'{table}.jsonl').write_text('', encoding='utf-8')
+        (root / f'{table}.jsonl').write_text('', encoding='utf-8', newline='\n')
     (root / 'study.json').write_text(json.dumps({'schema_version': SCHEMA_VERSION, 'mode': mode, 'routes': routes,
-        'question': question, 'origins': []}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        'question': question, 'origins': []}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
     (root / 'brief.md').write_text(
         '# Research brief\n\nDecision/question:\n\nScope, date, versions:\n\n'
         'Subquestions and search routes:\n\nExclusions and access limits:\n\n'
-        'Stopping conditions and unresolved gaps:\n', encoding='utf-8')
+        'Stopping conditions and unresolved gaps:\n', encoding='utf-8', newline='\n')
     return {'root': str(root), 'mode': mode, 'routes': routes,
             'created': [f'{t}.jsonl' for t in TABLES] + ['brief.md', 'study.json']}
 
@@ -767,12 +767,12 @@ def _rewrite(root, table, rows, raw_count, loaded_count):
         raise ValueError(f'{table}.jsonl has unreadable rows; fix them before modifying records')
     path = root / f'{table}.jsonl'
     temporary = path.with_name(path.name + '.tmp')
-    temporary.write_text(''.join(json.dumps(r, ensure_ascii=False) + '\n' for r in rows), encoding='utf-8')
+    temporary.write_text(''.join(json.dumps(r, ensure_ascii=False) + '\n' for r in rows), encoding='utf-8', newline='\n')
     temporary.replace(path)
 
 
 def _history(root, operation, table, identity, reason, previous):
-    with (root / 'history.jsonl').open('a', encoding='utf-8') as handle:
+    with (root / 'history.jsonl').open('a', encoding='utf-8', newline='\n') as handle:
         handle.write(json.dumps({'at': now(), 'op': operation, 'table': table, 'id': identity,
                                  'reason': reason, 'previous': previous}, ensure_ascii=False) + '\n')
 
@@ -816,9 +816,9 @@ def _commit(root, table, row, *, operation, reason=None, require_existing=False,
         raise ValueError('Change rejected: ' + '; '.join(new_errors))
     if table == 'study':
         (root / 'study.json').write_text(json.dumps(candidate_metadata, ensure_ascii=False, indent=2) + '\n',
-                                         encoding='utf-8')
+                                         encoding='utf-8', newline='\n')
     elif previous is None:
-        with (root / f'{table}.jsonl').open('a', encoding='utf-8') as handle:
+        with (root / f'{table}.jsonl').open('a', encoding='utf-8', newline='\n') as handle:
             handle.write(''.join(json.dumps(item, ensure_ascii=False) + '\n' for item in rows))
     else:
         _rewrite(root, table, list(candidate[table].values()), raw_counts[table], len(data[table]))
