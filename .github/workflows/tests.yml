@@ -1,0 +1,27 @@
+name: tests
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.10', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # the legacy-removal tests read 0.1.1 files from history
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit tests
+        run: python -X utf8 -m unittest discover -s tests -v
+      - name: Project verification
+        run: python -X utf8 scripts/verify_project.py

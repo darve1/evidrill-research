@@ -1,17 +1,28 @@
 # Reproducible, synthetic examples
 
-The [raw corpus](fixtures/research-corpus/README.md) is fictional and written for this project. It includes repeated publications, a corrected percentage, different study populations, two studies in one paper, abstract-only access, version differences, circular news citations, and a survey denominator change.
+The [raw corpus](fixtures/research-corpus/README.md) is fictional and written for this project. It has these traps:
+- repeated publications and a corrected percentage
+- different study populations, and two studies in one paper
+- abstract-only access and version differences
+- circular news citations
+- a survey whose denominator changes
 
-The [evaluation rubric](fixtures/expected.md) distinguishes structural checks from semantic review. Keep it hidden from an agent performing a behavioral trial; review its actual output afterward.
+The [community-scope files](fixtures/community-scope) cover reposts and an official reply. Both corpora are also used by the [behavioral evaluation](../evals/README.md).
 
-Build a small illustrative ledger once (an existing output is never overwritten):
+[`demo/`](demo/report.md) is a study built with the helper's own commands, with fixed timestamps so it rebuilds byte for byte:
 
 ```text
-python -X utf8 examples/build_demo.py --root examples/demo
-python -X utf8 skills/deep-research/scripts/research_ledger.py stress --root examples/demo
-python -X utf8 skills/deep-research/scripts/research_ledger.py render --root examples/demo
+python -X utf8 examples/build_demo.py --root my-demo
+python -X utf8 skills/evidrill/scripts/research_ledger.py check --root examples/demo
+python -X utf8 skills/evidrill/scripts/research_ledger.py render --root examples/demo
 ```
 
-The demo is authored fixture data, not an independent agent evaluation. It intentionally returns exit 2 because general superiority remains unresolved. Its narrow observed claim can still be supported. All outputs retain `truth_certified:false`.
+[build_demo.py](build_demo.py) shows the whole flow in under 90 lines. It initializes a study and snapshots three sources. It then adds queries, origins, evidence and claims in batches. It records reviews, two counter-searches per key claim, and origin-removal reviews.
 
-Expected user-facing interpretation: Lumen was reported at 90% versus Baseline's 80% on Small-X. The preprint and journal paper describe one experiment. A different Large-Y study reports 70% versus 75%. Removing the Small-X origin removes the recorded support for Small-X superiority; this does not prove that the claim is false. General superiority is not established by these records.
+The demo is authored fixture data, not an agent evaluation. `check` returns 2 on purpose: general superiority stays unresolved. The narrow Small-X claim is supported, and all outputs keep `truth_certified:false`.
+
+The expected reading:
+- Lumen was reported at 90% versus Baseline's 80% on Small-X, and the preprint and the journal paper describe one experiment.
+- A different Large-Y study reports 70% versus 75%.
+- Removing the Small-X origin removes the support for the Small-X result. That does not prove the result false.
+- General superiority is not established.
