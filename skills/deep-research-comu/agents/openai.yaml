@@ -1,4 +1,0 @@
-interface:
-  display_name: "Deep Research + Community"
-  short_description: "학술 문헌에 커뮤니티 후기·토론을 더하고 경험의 조건과 원출처를 확인합니다"
-  default_prompt: "$deep-research-comu 이 주제를 학술 문헌과 커뮤니티 자료에서 함께 조사해줘."

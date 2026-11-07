@@ -1,4 +1,0 @@
-interface:
-  display_name: "Deep Research — All"
-  short_description: "학술·기술·범용 웹·커뮤니티를 함께 조사하고 원출처·반대 근거·공백을 남깁니다"
-  default_prompt: "$deep-research-all 이 주제를 학술·기술·범용 웹·커뮤니티 자료에서 폭넓게 조사해줘."

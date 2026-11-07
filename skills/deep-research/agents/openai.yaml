@@ -1,4 +1,0 @@
-interface:
-  display_name: "Deep Research"
-  short_description: "논문·학술 문헌을 조사하고 원문·반대 근거·결론의 조건을 추적합니다"
-  default_prompt: "$deep-research 이 주제를 논문·학술지·학회·문헌 중심으로 조사하고, 원문·반대 근거·결론 스트레스 테스트를 남겨줘."
