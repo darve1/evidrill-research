@@ -1,0 +1,7 @@
+Preprint v1, posted 2025-01-14.
+Title: Corvid on the Small-X benchmark
+Authors: J. Hale, M. Ortiz
+
+We evaluate the Corvid method on the 20-item Small-X benchmark with a fixed compute budget of 1 unit.
+Corvid solved 18 items (95%). The Standard method solved 16 items.
+We conclude that Corvid is a promising alternative to Standard.

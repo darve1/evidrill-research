@@ -1,0 +1,4 @@
+Conference abstract, 2025-10-03. Full paper: not available.
+Title: Field deployment of Corvid
+
+Abstract: We report deployments of Corvid at 12 organizations. Early results show promising adoption and strong user satisfaction.

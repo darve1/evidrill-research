@@ -15,8 +15,8 @@ Thumbs.db
 /AGENTS.md
 /docs/*
 !/docs/PUBLICATION.md
-!/docs/COMMUNITY_MODES.md
 !/docs/COMPATIBILITY.md
+!/docs/PROVENANCE.md
 
 # Generated personal studies and editor files.
 /studies/
@@ -24,3 +24,6 @@ Thumbs.db
 .vscode/
 *.pem
 *.key
+
+# Behavioral trial transcripts and workspaces (may contain third-party snapshots).
+/evals/runs/

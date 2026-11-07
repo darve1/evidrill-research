@@ -1,0 +1,28 @@
+{
+  "prompt": "시간 제한 섭식(간헐적 단식의 한 형태)이 같은 수준의 일반 칼로리 제한보다 성인의 체중 감량에 더 효과적인지 조사해줘. 무작위 대조 시험을 중심으로. 결론과 근거, 반대 근거, 남은 공백을 알려줘.",
+  "allowed_tools": [
+    "Read",
+    "Write",
+    "Edit",
+    "Glob",
+    "Grep",
+    "Skill",
+    "Bash(python:*)",
+    "Bash(python3:*)",
+    "Bash(ls:*)",
+    "Bash(mkdir:*)",
+    "Bash(cat:*)",
+    "Bash(cd:*)",
+    "Bash(head:*)",
+    "Bash(wc:*)",
+    "Bash(cp:*)",
+    "Bash(echo:*)",
+    "WebSearch",
+    "WebFetch",
+    "Bash(curl:*)",
+    "Bash(pdftotext:*)"
+  ],
+  "disallowed_tools": [
+    "PowerShell"
+  ]
+}
