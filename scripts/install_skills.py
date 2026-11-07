@@ -33,34 +33,50 @@ def _linked(path: Path) -> bool:
                                  & getattr(stat, 'FILE_ATTRIBUTE_REPARSE_POINT', 0))
 
 
-def legacy_files(root: Path) -> list[Path]:
-    return sorted(p for package in LEGACY_PACKAGES if (root / package).is_dir()
-                  for p in (root / package).rglob('*') if p.is_file())
+def legacy_present(root: Path) -> bool:
+    return any((root / package).exists() or (root / package).is_symlink() for package in LEGACY_PACKAGES)
+
+
+def _walk(directory: Path, files: list, folders: list, linked: list) -> None:
+    """Collect files and folders bottom-up without ever entering a symlink or junction."""
+    for entry in sorted(directory.iterdir()):
+        if _linked(entry):
+            linked.append(entry)
+        elif entry.is_dir():
+            _walk(entry, files, folders, linked)
+        elif entry.is_file():
+            files.append(entry)
+    folders.append(directory)
 
 
 def remove_legacy(root: Path, *, dry_run: bool = False) -> dict:
     """Remove only 0.1.x files whose SHA-256 matches a released version; keep everything else."""
     known = json.loads(LEGACY_MANIFEST.read_text(encoding='utf-8'))['files']
-    removed, kept = [], []
-    for path in legacy_files(root):
-        if any(_linked(parent) for parent in (path, *path.parents) if parent.is_relative_to(root)):
-            kept.append(str(path))
+    removed, kept, folders = [], [], []
+    if _linked(root) or any(_linked(parent) for parent in root.parents):
+        raise ValueError(f'Linked skills directory; remove old folders manually: {root}')
+    for package in LEGACY_PACKAGES:
+        directory = root / package
+        if _linked(directory):
+            kept.append(f'{package} (linked folder, not entered)')
             continue
-        relative = path.relative_to(root).as_posix()
-        if hashlib.sha256(path.read_bytes()).hexdigest() in known.get(relative, []):
-            removed.append(relative)
-            if not dry_run:
-                path.unlink()
-        else:
-            kept.append(relative)
+        if not directory.is_dir():
+            continue
+        files, linked = [], []
+        _walk(directory, files, folders, linked)
+        kept += [f'{p.relative_to(root).as_posix()} (link, not entered)' for p in linked]
+        for path in files:
+            relative = path.relative_to(root).as_posix()
+            if hashlib.sha256(path.read_bytes()).hexdigest() in known.get(relative, []):
+                removed.append(relative)
+                if not dry_run:
+                    path.unlink()
+            else:
+                kept.append(relative)
     if not dry_run:
-        for package in LEGACY_PACKAGES:
-            directory = root / package
-            for folder in sorted((d for d in directory.rglob('*') if d.is_dir()), reverse=True) if directory.is_dir() else []:
-                if not any(folder.iterdir()):
-                    folder.rmdir()
-            if directory.is_dir() and not any(directory.iterdir()):
-                directory.rmdir()
+        for folder in folders:  # children come before parents
+            if not any(folder.iterdir()):
+                folder.rmdir()
     return {'legacy_removed': removed, 'legacy_kept_modified_or_unknown': kept}
 
 
@@ -106,7 +122,7 @@ def install(targets: dict[str, Path], *, source: Path = SOURCE, dry_run: bool = 
     for name, root in targets.items():
         if remove_old:
             legacy[name] = remove_legacy(root.expanduser().resolve(), dry_run=dry_run)
-        elif legacy_files(root.expanduser().resolve()):
+        elif legacy_present(root.expanduser().resolve()):
             legacy[name] = {'warning': 'Evidrill 0.1.x deep-research folders found; they shadow Claude Code\'s '
                                        'built-in deep-research skill. Rerun with --remove-legacy.'}
     if legacy:

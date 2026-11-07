@@ -6,9 +6,9 @@
 
 - Install from Claude Code with `/plugin marketplace add darve1/evidrill-research`, then `/plugin install evidrill@evidrill`. The Python installer still covers Codex. `--remove-legacy` deletes unmodified 0.1.x files and keeps anything you changed.
 - `snapshot --url` downloads the source itself, records it as `helper_fetched`, and extracts text from HTML (and from PDF when `pdftotext` is available). A tool summary is recorded as `agent_written`, not as the source.
-- Quote checks fold only layout differences (whitespace, line-break hyphens, curly quotes, ligatures). Quotes need at least 20 characters (10 for CJK) unless a reason is given, and the surrounding context is shown with every quote.
+- Quote checks fold only layout differences (whitespace, line-break and soft hyphens, curly quotes, ligatures) and use the extracted text of HTML and PDF sources, never their markup. Quotes need at least 20 characters (10 for CJK) unless a reason is given, and the surrounding context is shown with every quote.
 - Every key claim needs at least two distinct counterevidence searches. Abstract-only support for a key claim stays pending.
-- Record commands (`add`, `set-claim`, `review`, `counter`, `origin`, `stress-review`) validate the whole study and refuse a change that would introduce an error. `add --json-file` accepts a JSON array or JSON Lines and writes all rows or none. Only replaced versions go to `history.jsonl`.
+- Record commands (`add`, `set-claim`, `review`, `counter`, `origin`, `stress-review`) validate the whole study and refuse a change that would introduce an error. `add --json-file` accepts a JSON array or JSON Lines and writes all rows or none. Only replaced versions go to `history.jsonl`, and replacing an evidence row makes earlier reviews of it stale.
 - Reviews record their method (`self`, `fresh_agent`, `human`). Origins can carry design, population, n, effect and CI; sources can carry screening decisions and queries a result count.
 - The instructions are rewritten in English at half their former size (39 KB to 20 KB). Answers now open with the answer, the confidence and the largest weakness, and say what was not done.
 - Add a behavioral evaluation harness with fictional and real-topic tasks and blind grading; see `evals/results.md`.

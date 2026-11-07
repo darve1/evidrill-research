@@ -36,7 +36,7 @@ python -X utf8 scripts/install_skills.py --target both --remove-legacy --dry-run
 python -X utf8 scripts/install_skills.py --target both --remove-legacy
 ```
 
-Only files whose SHA-256 matches a released 0.1.x file are deleted. Files you edited or added are kept and listed; move them out of the skill directory yourself. Studies recorded with 0.1.x (schema 2) are not migrated; the 0.2.0 helper reads schema 3 only.
+Only files whose SHA-256 matches a released 0.1.x file are deleted. Files you edited or added are kept and listed, and linked folders (symlinks, junctions) are never entered; move what remains out of the skill directory yourself. Studies recorded with 0.1.x (schema 2) are not migrated; the 0.2.0 helper reads schema 3 only.
 
 ## Existing installations
 

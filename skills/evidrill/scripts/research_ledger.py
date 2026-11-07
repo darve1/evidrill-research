@@ -61,6 +61,11 @@ def digest(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+def evidence_digest(evidence):
+    """Fingerprint of the evidence row a review judged; replacing the row makes the review stale."""
+    return digest(json.dumps(evidence, sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))
+
+
 def inside(root, name):
     if not isinstance(name, str) or not name or Path(name).is_absolute():
         raise ValueError('Snapshot paths must be relative to the study')
@@ -70,24 +75,33 @@ def inside(root, name):
     return target
 
 
-def normalize(text, join_hyphens=False):
+LINE_BREAK_HYPHEN = r'(\w)([-‐])[ \t]*\r?\n[ \t]*(\w)'
+
+
+def normalize(text, hyphens=None):
     """Fold only layout differences: whitespace, line-break hyphens, curly quotes, ligatures.
 
-    Letters, digits, negations and other punctuation are compared exactly.
+    Letters, digits, negations and other punctuation are compared exactly. `hyphens` handles a
+    hyphen at a line end: 'join' drops it (hyphen-/nation), 'keep' keeps it (state-of-the-/art).
+    Soft hyphens are invisible and always dropped.
     """
-    text = unicodedata.normalize('NFC', text).translate(FOLD)
-    if join_hyphens:
-        text = re.sub(r'(\w)-[ \t]*\r?\n[ \t]*(\w)', r'\1\2', text)
-    return re.sub(r'\s+', ' ', text).strip()
+    text = re.sub(r'­[ \t]*\r?\n[ \t]*', '', unicodedata.normalize('NFC', text))
+    if hyphens == 'join':
+        text = re.sub(LINE_BREAK_HYPHEN, r'\1\3', text)
+    elif hyphens == 'keep':
+        text = re.sub(LINE_BREAK_HYPHEN, r'\1\2\3', text)
+    return re.sub(r'\s+', ' ', text.translate(FOLD)).strip()
 
 
 def text_variants(text):
-    return [normalize(text), normalize(text, join_hyphens=True)]
+    return list(dict.fromkeys([normalize(text), normalize(text, 'join'), normalize(text, 'keep')]))
 
 
 def locate(quote_text, variants):
     """Return (before, after) context around the quote, or None when it is absent."""
     needle = normalize(quote_text)
+    if not needle:
+        return None
     for haystack in variants:
         index = haystack.find(needle)
         if index >= 0:
@@ -186,8 +200,16 @@ def html_to_text(markup):
     return re.sub(r'\n{3,}', '\n\n', '\n'.join(lines)).strip() + '\n'
 
 
+BOMS = ((b'\xef\xbb\xbf', 'utf-8-sig'), (b'\xff\xfe\x00\x00', 'utf-32'), (b'\x00\x00\xfe\xff', 'utf-32'),
+        (b'\xff\xfe', 'utf-16'), (b'\xfe\xff', 'utf-16'))
+
+
+def bom_encoding(raw):
+    return next((name for mark, name in BOMS if raw.startswith(mark)), None)
+
+
 def decode(raw, content_type=''):
-    candidates = []
+    candidates = [bom_encoding(raw)] if bom_encoding(raw) else []
     header = re.search(r'charset=["\']?([\w.-]+)', content_type or '', re.I)
     if header:
         candidates.append(header.group(1))
@@ -206,12 +228,15 @@ def sniff(raw, content_type='', name=''):
     kind = (content_type or '').split(';')[0].strip().lower()
     head = raw[:1024].lstrip().lower()
     name = name.lower()
-    if kind == 'application/pdf' or raw.startswith(b'%PDF-') or name.endswith('.pdf'):
+    if raw.startswith(b'%PDF-'):
         return 'pdf'
-    if kind in ('text/html', 'application/xhtml+xml') or head.startswith((b'<!doctype html', b'<html')) \
-            or name.endswith(('.html', '.htm')):
+    if kind in ('text/html', 'application/xhtml+xml') or head.startswith((b'<!doctype html', b'<html')):
+        return 'html'  # a login or error page served for a .pdf URL is still HTML
+    if kind == 'application/pdf' or name.endswith('.pdf'):
+        return 'pdf'
+    if name.endswith(('.html', '.htm')):
         return 'html'
-    if kind.startswith('text/') or kind in ('application/json', 'application/xml') \
+    if bom_encoding(raw) or kind.startswith('text/') or kind in ('application/json', 'application/xml') \
             or name.endswith(('.txt', '.md', '.json', '.xml', '.csv')):
         return 'text'
     if not kind:
@@ -319,7 +344,8 @@ def load(root):
     for table, key in TABLES.items():
         records, nonempty = {}, 0
         try:
-            lines = (root / f'{table}.jsonl').read_text(encoding='utf-8-sig').splitlines()
+            # Split on \n only: U+2028, U+2029 and U+0085 may appear unescaped inside JSON strings.
+            lines = (root / f'{table}.jsonl').read_text(encoding='utf-8-sig').split('\n')
         except (OSError, UnicodeError) as error:
             errors.append(f'{table}: cannot read: {error}')
             lines = []
@@ -364,10 +390,12 @@ def read_metadata(root, errors):
         errors.append(f'study.json: unsupported schema_version; expected {SCHEMA_VERSION} '
                       '(studies made with 0.1.x need the 0.1.x helper)')
     mode, routes = metadata.get('mode'), metadata.get('routes')
-    if mode not in MODES or routes not in VALID_ROUTES or (len(routes) > 1 and mode != 'literature') \
-            or (len(routes) == 1 and routes != [mode]):
+    canonical = next((r for r in VALID_ROUTES if isinstance(routes, list) and len(routes) == len(r)
+                      and all(isinstance(x, str) for x in routes) and set(routes) == set(r)), None)
+    if mode not in MODES or canonical is None or (len(canonical) > 1 and mode != 'literature') \
+            or (len(canonical) == 1 and canonical != [mode]):
         errors.append('study.json: invalid mode/routes combination')
-        metadata['routes'] = routes if routes in VALID_ROUTES else []
+        metadata['routes'] = canonical or []
     if not isinstance(metadata.get('question'), str):
         errors.append('study.json: question must be text')
     if not isinstance(metadata.get('origins'), list) or any(not isinstance(o, dict) for o in metadata['origins']):
@@ -420,8 +448,14 @@ def validate(root, data, metadata, errors):
             if 'n' in origin and (type(origin['n']) is not int or origin['n'] < 0):
                 errors.append(f'{oid}: n must be a non-negative integer')
 
+    def screening_of(source):
+        value = source.get('screening')
+        return value if isinstance(value, dict) else {}
+
+    # Every check below runs even when other errors exist, so fixing one error never reveals
+    # previously hidden ones as "new" and an existing error never switches a check off.
     coverage = {}
-    if metadata is not None and not errors:
+    if metadata is not None:
         for route in metadata['routes']:
             queries = [q for q in data['queries'].values() if q.get('route') == route]
             sources = [s for s in data['sources'].values() if s.get('route') == route]
@@ -432,8 +466,8 @@ def validate(root, data, metadata, errors):
                 'sources': len(sources),
                 'read_sources': sum(s.get('read_level') in ('relevant_sections', 'full_text') for s in sources),
                 'abstract_only_sources': sum(s.get('read_level') == 'abstract' for s in sources),
-                'screened_in': sum((s.get('screening') or {}).get('decision') == 'included' for s in sources),
-                'screened_out': sum((s.get('screening') or {}).get('decision') == 'excluded' for s in sources)}
+                'screened_in': sum(screening_of(s).get('decision') == 'included' for s in sources),
+                'screened_out': sum(screening_of(s).get('decision') == 'excluded' for s in sources)}
             if not coverage[route]['completed_queries']:
                 pending.append(f'{route}: selected route has no completed search; disclose access or scope gap')
 
@@ -460,7 +494,10 @@ def validate(root, data, metadata, errors):
         if source.get('format') not in ('text', 'binary'):
             errors.append(f'{sid}: snapshot format must be text or binary')
         variants = []
-        for path_key, hash_key, is_text in [('snapshot_path', 'sha256', source.get('format') == 'text'),
+        # With an extracted text copy (HTML, PDF, non-UTF-8 text), quotes are checked against that
+        # readable text only, never against markup, comments or scripts in the original bytes.
+        raw_is_text = source.get('format') == 'text' and 'text_path' not in source
+        for path_key, hash_key, is_text in [('snapshot_path', 'sha256', raw_is_text),
                                            ('text_path', 'text_sha256', True)]:
             if path_key not in source:
                 continue
@@ -504,7 +541,9 @@ def validate(root, data, metadata, errors):
         if evidence.get('kind') == 'text':
             text_fields(evidence, ['quote'], eid)
             passage = evidence.get('quote')
-            if sid not in texts:
+            if isinstance(passage, str) and passage.strip() and not normalize(passage):
+                errors.append(f'{eid}: quote has no visible characters')
+            elif sid not in texts:
                 pending.append(f'{eid}: no preserved UTF-8 text for exact quote check')
             elif isinstance(passage, str) and passage.strip():
                 found = locate(passage, texts[sid])
@@ -575,7 +614,11 @@ def validate(root, data, metadata, errors):
             if source.get('read_level') in ('snippet', 'discovered', 'unavailable'):
                 pending.append(f'{cid}/{eid}: underlying source not read')
             judgment = mapped.get(eid, {}).get('judgment')
-            if judgment in ('supports', 'partial', 'contradicts', 'irrelevant'):
+            basis = mapped.get(eid, {}).get('evidence_sha256')
+            if basis is not None and basis != evidence_digest(evidence):
+                pending.append(f'{cid}/{eid}: evidence changed after review; review it again')
+                judgment = None
+            elif judgment in ('supports', 'partial', 'contradicts', 'irrelevant'):
                 reviewed_pairs += 1
                 supported_pairs += judgment == 'supports'
             else:
@@ -623,15 +666,20 @@ def validate(root, data, metadata, errors):
 
     if not data['claims']:
         pending.append('No claims recorded; an empty study is not ready')
-    if metadata is not None and not errors:
+    if metadata is not None:
         for claim in data['claims'].values():
             if claim.get('importance') == 'key' and claim.get('kind') != 'proposal':
-                validate_stress_review(claim, analyze_claim(data, metadata, claim), errors, pending)
+                try:
+                    analysis = analyze_claim(data, metadata, claim)
+                except (KeyError, TypeError, AttributeError):
+                    continue  # malformed links are already reported above; the analysis needs them fixed
+                validate_stress_review(claim, analysis, errors, pending)
     families = {s.get('family_id') for s in data['sources'].values()
                 if isinstance(s.get('family_id'), str) and s['family_id'] != 'unknown'}
     captures = {}
     for source in data['sources'].values():
-        captures[source.get('capture')] = captures.get(source.get('capture'), 0) + 1
+        label = source.get('capture') if isinstance(source.get('capture'), str) else 'invalid'
+        captures[label] = captures.get(label, 0) + 1
     pending = list(dict.fromkeys(pending))
     report = {'integrity': 'fail' if errors else 'pass',
               'review_readiness': 'needs_review' if errors or pending else 'ready',
@@ -771,10 +819,20 @@ def _rewrite(root, table, rows, raw_count, loaded_count):
     temporary.replace(path)
 
 
+def _append(path, text):
+    """Append JSON Lines, first ending an unterminated last line so two rows never merge."""
+    prefix = ''
+    if path.exists() and path.stat().st_size:
+        with path.open('rb') as handle:
+            handle.seek(-1, 2)
+            prefix = '' if handle.read(1) == b'\n' else '\n'
+    with path.open('a', encoding='utf-8', newline='\n') as handle:
+        handle.write(prefix + text)
+
+
 def _history(root, operation, table, identity, reason, previous):
-    with (root / 'history.jsonl').open('a', encoding='utf-8', newline='\n') as handle:
-        handle.write(json.dumps({'at': now(), 'op': operation, 'table': table, 'id': identity,
-                                 'reason': reason, 'previous': previous}, ensure_ascii=False) + '\n')
+    _append(root / 'history.jsonl', json.dumps({'at': now(), 'op': operation, 'table': table, 'id': identity,
+                                                'reason': reason, 'previous': previous}, ensure_ascii=False) + '\n')
 
 
 def _commit(root, table, row, *, operation, reason=None, require_existing=False, metadata=None, history=None):
@@ -786,6 +844,9 @@ def _commit(root, table, row, *, operation, reason=None, require_existing=False,
     root, data, current_metadata, load_errors, raw_counts = load(root)
     if current_metadata is None:
         raise ValueError('Run init first: study.json is missing or unreadable')
+    broken = [e for e in load_errors if e.startswith('study.json')]
+    if broken:  # never write back a study.json that was only partly understood
+        raise ValueError('Fix study.json by hand before recording: ' + '; '.join(broken))
     before, _ = validate(root, data, current_metadata, list(load_errors))
     candidate = copy.deepcopy(data)
     candidate_metadata = metadata if metadata is not None else current_metadata
@@ -818,8 +879,7 @@ def _commit(root, table, row, *, operation, reason=None, require_existing=False,
         (root / 'study.json').write_text(json.dumps(candidate_metadata, ensure_ascii=False, indent=2) + '\n',
                                          encoding='utf-8', newline='\n')
     elif previous is None:
-        with (root / f'{table}.jsonl').open('a', encoding='utf-8', newline='\n') as handle:
-            handle.write(''.join(json.dumps(item, ensure_ascii=False) + '\n' for item in rows))
+        _append(root / f'{table}.jsonl', ''.join(json.dumps(item, ensure_ascii=False) + '\n' for item in rows))
     else:
         _rewrite(root, table, list(candidate[table].values()), raw_counts[table], len(data[table]))
     if previous is not None and (history if history is not None else True):
@@ -902,8 +962,11 @@ def review(root, claim_id, evidence_id, judgment, rationale, reviewer='agent', m
         raise ValueError(f'{evidence_id} is not linked to {claim_id}; add it to evidence_ids with set-claim first')
     reviews = [r for r in claim.get('reviews', []) if r.get('evidence_id') != evidence_id]
     replaced = len(reviews) != len(claim.get('reviews', []))
-    reviews.append({'evidence_id': evidence_id, 'judgment': judgment, 'reviewer': reviewer, 'method': method,
-                    'checked_at': now(), 'rationale': rationale})
+    entry = {'evidence_id': evidence_id, 'judgment': judgment, 'reviewer': reviewer, 'method': method,
+             'checked_at': now(), 'rationale': rationale}
+    if evidence_id in data['evidence']:
+        entry['evidence_sha256'] = evidence_digest(data['evidence'][evidence_id])
+    reviews.append(entry)
     claim['reviews'] = reviews
     result, candidate, context = _commit(root, 'claims', claim, operation='review',
                                          reason='review replaced' if replaced else 'review added',

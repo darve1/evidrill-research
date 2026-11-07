@@ -38,7 +38,7 @@ truth_certified: false. Recorded evidence and reviewer judgments; no automatic t
 - Structure: single_origin
 - Unknown origins: none
 - Shared dependencies: none
-- Basis SHA-256: 7c9c4814cc41bf231c775f4255cd13bd95245bd17c3441415dda3b651f7c3154
+- Basis SHA-256: 819eb791f101c5156c470a89c996064788e4dc2244333583433d5f902b9fe621
 - Review selection: Removing the only origin leaves no support.
 - Exclude lx01 (study; design: benchmark; n=20); remaining supports: none; remaining counterevidence: none
   - Recorded judgment: narrowed (current, self); Only LX-01 supports the Small-X result.
@@ -70,7 +70,7 @@ truth_certified: false. Recorded evidence and reviewer judgments; no automatic t
 - Structure: no_recorded_support
 - Unknown origins: none
 - Shared dependencies: none
-- Basis SHA-256: 85b3d04a0cbcd45461b4d5c7a990e15f074daecb2362fd37bcfec7518bb9f87a
+- Basis SHA-256: 31eea7aedf4fe4aab02511f7c21ce2be3d505707abd63be2d24742bded823539
 - Review selection: Removing the contrary origin still leaves no full support.
 - Exclude lx01 (study; design: benchmark; n=20); remaining supports: none; remaining counterevidence: e3
   - Recorded judgment: unresolved (current, self); Only the contrary LY-02 result remains.
