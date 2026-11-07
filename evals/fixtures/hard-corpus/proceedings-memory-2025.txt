@@ -1,0 +1,5 @@
+Proceedings of the Fictional Systems Workshop, 2025-11-05.
+Title: Two memory measurements of Corvid
+
+Section 1 (Team A, Lab North): Corvid reached a peak memory of 2.0 GB on the public workload W.
+Section 2 (Team B, Lab South): Corvid reached a peak memory of 2.1 GB on the public workload W.

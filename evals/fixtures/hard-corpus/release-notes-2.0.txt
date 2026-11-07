@@ -1,0 +1,4 @@
+Corvid 2.0 release notes, 2025-11-01.
+Platforms: Linux (tested). Windows (experimental).
+Search: Corvid 2.0 uses the Corvid Cloud search API by default.
+Inference runs locally on your machine.

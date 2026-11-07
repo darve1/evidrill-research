@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evidrill Research"
+  short_description: "Traces key claims to preserved source passages, counterevidence and origin-removal checks"
+  default_prompt: "$evidrill Research this question, keep the passages behind each key claim, search for counterevidence and show what the conclusion depends on."

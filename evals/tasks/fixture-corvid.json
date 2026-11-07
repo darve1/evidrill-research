@@ -1,0 +1,41 @@
+{
+  "prompt": "`materials/` 폴더에 있는 파일만 근거로 조사해줘. 웹 검색이나 외부 자료는 쓰지 마. 질문: 가상의 Corvid 방법이 Standard보다 나은가? 그리고 지금 도입해도 되나? 결론과 근거, 반대 근거, 남은 공백을 알려줘.",
+  "materials": [
+    "evals/fixtures/hard-corpus/README.md",
+    "evals/fixtures/hard-corpus/abstract-deploy-2025.txt",
+    "evals/fixtures/hard-corpus/journal-hale-2025.txt",
+    "evals/fixtures/hard-corpus/news-gadgetwire.txt",
+    "evals/fixtures/hard-corpus/news-techdaily.txt",
+    "evals/fixtures/hard-corpus/preprint-hale-2025.txt",
+    "evals/fixtures/hard-corpus/proceedings-memory-2025.txt",
+    "evals/fixtures/hard-corpus/proceedings-mensah-2025.txt",
+    "evals/fixtures/hard-corpus/release-notes-1.0.txt",
+    "evals/fixtures/hard-corpus/release-notes-2.0.txt",
+    "evals/fixtures/hard-corpus/survey-bulletin.txt",
+    "evals/fixtures/hard-corpus/vendor-blog-2025.txt"
+  ],
+  "allowed_tools": [
+    "Read",
+    "Write",
+    "Edit",
+    "Glob",
+    "Grep",
+    "Skill",
+    "Bash(python:*)",
+    "Bash(python3:*)",
+    "Bash(ls:*)",
+    "Bash(mkdir:*)",
+    "Bash(cat:*)",
+    "Bash(cd:*)",
+    "Bash(head:*)",
+    "Bash(wc:*)",
+    "Bash(cp:*)",
+    "Bash(echo:*)"
+  ],
+  "disallowed_tools": [
+    "PowerShell",
+    "WebSearch",
+    "WebFetch",
+    "Bash(curl:*)"
+  ]
+}

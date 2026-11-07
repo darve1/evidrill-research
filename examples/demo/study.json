@@ -1,32 +1,37 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "mode": "literature",
   "routes": [
     "literature"
   ],
-  "question": "Does fictional Lumen outperform Baseline?",
+  "question": "Does the fictional Lumen method outperform Baseline?",
   "origins": [
     {
       "origin_id": "lx01",
       "kind": "study",
-      "label": "lx01",
+      "label": "LX-01 Small-X experiment",
       "source_ids": [
-        "s1"
+        "s1",
+        "s3"
       ],
-      "rationale": "Explicit study ID in fictional input.",
-      "reviewer": "authored fixture",
-      "checked_at": "2026-11-06T00:00:00Z"
+      "rationale": "Preprint and journal article share study ID LX-01.",
+      "reviewer": "authored fixture (not an independent reviewer)",
+      "design": "benchmark",
+      "n": 20,
+      "checked_at": "2026-11-07T00:00:00Z"
     },
     {
       "origin_id": "ly02",
       "kind": "study",
-      "label": "ly02",
+      "label": "LY-02 Large-Y experiment",
       "source_ids": [
         "s2"
       ],
-      "rationale": "Explicit study ID in fictional input.",
-      "reviewer": "authored fixture",
-      "checked_at": "2026-11-06T00:00:00Z"
+      "rationale": "Separate study ID, team and benchmark.",
+      "reviewer": "authored fixture (not an independent reviewer)",
+      "design": "benchmark",
+      "n": 100,
+      "checked_at": "2026-11-07T00:00:00Z"
     }
   ]
 }

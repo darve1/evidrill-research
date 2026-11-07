@@ -1,0 +1,7 @@
+Journal of Applied Fiction, volume 3, issue 2, published 2025-06-02.
+Title: A small reasoning benchmark comparison of Corvid and Standard
+Authors: J. Hale, M. Ortiz, R. Bae
+
+Methods: We used the 20 items of the Small-X benchmark and a fixed compute budget of 1 unit.
+Results: Corvid solved 18/20 items (90%) and Standard solved 16/20 items (80%).
+Limitations: All items come from a single benchmark.

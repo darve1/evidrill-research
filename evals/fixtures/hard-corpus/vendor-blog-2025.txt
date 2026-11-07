@@ -1,0 +1,4 @@
+Corvid company blog, 2025-10-20.
+Title: Why teams switch to Corvid
+Corvid is twice as accurate as Standard, according to our evaluation on the Small-X benchmark.
+Corvid now runs on every desktop.

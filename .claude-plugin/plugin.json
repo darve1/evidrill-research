@@ -1,0 +1,10 @@
+{
+  "name": "evidrill",
+  "version": "0.2.0",
+  "description": "Evidence-traced research: preserved source passages, counterevidence searches and origin-removal checks for key claims.",
+  "author": {"name": "darve1"},
+  "homepage": "https://github.com/darve1/evidrill-research",
+  "repository": "https://github.com/darve1/evidrill-research",
+  "license": "MIT",
+  "keywords": ["research", "evidence", "citations", "literature-review", "fact-checking"]
+}

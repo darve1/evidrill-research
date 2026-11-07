@@ -1,0 +1,6 @@
+Proceedings of the Fictional Systems Workshop, 2025-09-20.
+Title: Corvid and Standard on a larger benchmark
+Authors: K. Mensah, L. Fischer
+
+We compared Corvid and Standard on the Large-Y benchmark (100 items) with a compute budget of 1 unit.
+Corvid solved 70/100 items. Standard solved 75/100 items.

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Deep Research — Community Only"
-  short_description: "커뮤니티 자료만 조사하고 사용자 경험의 조건·반대 사례·공백을 추적합니다"
-  default_prompt: "$deep-research-comu-only 이 주제를 커뮤니티 토론·후기·Q&A만으로 조사해줘."

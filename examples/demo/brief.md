@@ -1,11 +1,4 @@
-# Research brief
+# Brief
 
-Decision/question:
-
-Scope, date, versions:
-
-Subquestions and search routes:
-
-Exclusions and access limits:
-
-Stopping conditions and unresolved gaps:
+Key claims: (1) the Small-X result, (2) general superiority.
+Cut-off: the supplied fictional corpus. Exclusions: anything outside examples/fixtures/research-corpus.

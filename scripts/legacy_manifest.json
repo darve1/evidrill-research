@@ -1,0 +1,71 @@
+{
+  "description": "SHA-256 of files installed by Evidrill Research 0.1.x (deep-research* folders). Only files matching these hashes are removed by --remove-legacy.",
+  "files": {
+    "deep-research-all/SKILL.md": [
+      "2b33e81a62b7d2725d774b8e0e38fb411d9db821501f70f6d8328f8250a527d6",
+      "907de15a221026e81690f8a06f8fde4586b08036203370efaaa2ab4d5a13f564"
+    ],
+    "deep-research-all/agents/openai.yaml": [
+      "aff959a100d17d451fbc0aa51d175c4b6421b2fa9dca22676063b49d3879dcd5"
+    ],
+    "deep-research-comu-only/SKILL.md": [
+      "2aee4a526755d1261fb5ce850e3cad175ce5a83c2d7b80b2616e5185d3e26502",
+      "a0e18820b715bc00639c0b6ab8c790bc1edd975b979eba356565fa0e10913ff7"
+    ],
+    "deep-research-comu-only/agents/openai.yaml": [
+      "a10584f2e8590f5e4f64f53f117cba99e06cb3731c7afd0589df326f0bd883f2"
+    ],
+    "deep-research-comu/SKILL.md": [
+      "72efaf97566d497a404a0807e9f4a0420016c0609523825fb7e94b682e5f7107",
+      "c80dea178df2636d9d39df8c52b32bd22163330d787a36622adc75150734751d"
+    ],
+    "deep-research-comu/agents/openai.yaml": [
+      "d86ccb121942f46230381a698e651abd49bd6a9f2c607d94b73578607ab27016"
+    ],
+    "deep-research-tech-only/SKILL.md": [
+      "03ff89aadae125bfdea0fb73a827d9af2c61aa780525f3b0259ae65bbae0bbdc",
+      "2992c8fffca68d25f4c8e90d0fc71f404854eb971ca1e83b0a9bc9a6640a3958"
+    ],
+    "deep-research-tech-only/agents/openai.yaml": [
+      "bfd017ee94e330e41db3e028b90338a947f0881d5e40a099a371b75e075586f9"
+    ],
+    "deep-research-tech/SKILL.md": [
+      "2c6892bfbf6c480eeca6e24f955a0efbcb149a93bafe566823037800ffe6c602",
+      "99426a4d6622be1b448321d6616dae346c01ae88c8d6660943307da1591fcb48"
+    ],
+    "deep-research-tech/agents/openai.yaml": [
+      "37c4418c6d916bd256ba2f94124ebab644a0895a2f413c4352a464ef4b4f0dc9"
+    ],
+    "deep-research/SKILL.md": [
+      "2233b592bf1619c333e4ce7c58993392d5a56c8b49b3250b6ef18b18d358ece4",
+      "624e080f69c660ce16ed073bbcc65eeebcb7f96450862461cc62fad2a6bffaea"
+    ],
+    "deep-research/agents/openai.yaml": [
+      "58225e9d23bfca2924d7db3d90e991ff8224d9285a059251abcb1bf079168034"
+    ],
+    "deep-research/references/community.md": [
+      "cd1005ddfce9cf94cd34d3c58f7ec3bbf6817cb31fa828e46afaca0834a713fd"
+    ],
+    "deep-research/references/general.md": [
+      "a6f6ae3c3001fb2d47b903650d00dfb4dbbacda7a4d9eaf814633924c3dd72c5"
+    ],
+    "deep-research/references/literature.md": [
+      "97b978807fede83b924f4a08d75cf32f34a050c167c09cbfa1c35ae101ba9569"
+    ],
+    "deep-research/references/provenance.md": [
+      "c60e2165e4331f1beb8d72081f2e11f7bba4629f27d7a8fbfb60afc55a4ecb4f"
+    ],
+    "deep-research/references/records.md": [
+      "1e54d0a82943a26eab094e2b27e8a314a5f30ba874b528f5042746a05eba9e70"
+    ],
+    "deep-research/references/technical.md": [
+      "9502831b53bbb921f5f6c1d2d0519063941889fcda7095d56b0f55a3c8bbcbb8"
+    ],
+    "deep-research/references/verification.md": [
+      "8596af20a3686fd29eb6ac3bc3c7a85a5037a67984032cac70fc5e491f1ffa1c"
+    ],
+    "deep-research/scripts/research_ledger.py": [
+      "44c1f191fb914cbf942f60c83e3e8e5e5018a252f1111ce74eb00cac029cc456"
+    ]
+  }
+}

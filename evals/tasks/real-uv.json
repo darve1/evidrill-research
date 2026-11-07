@@ -1,0 +1,28 @@
+{
+  "prompt": "파이썬 패키지 관리자 uv가 pip보다 10~100배 빠르다는 주장이 어떤 근거에 기대고 있는지, 그리고 제작사와 무관한 측정으로도 확인되는지 조사해줘. 결론과 근거, 반대 근거, 남은 공백을 알려줘.",
+  "allowed_tools": [
+    "Read",
+    "Write",
+    "Edit",
+    "Glob",
+    "Grep",
+    "Skill",
+    "Bash(python:*)",
+    "Bash(python3:*)",
+    "Bash(ls:*)",
+    "Bash(mkdir:*)",
+    "Bash(cat:*)",
+    "Bash(cd:*)",
+    "Bash(head:*)",
+    "Bash(wc:*)",
+    "Bash(cp:*)",
+    "Bash(echo:*)",
+    "WebSearch",
+    "WebFetch",
+    "Bash(curl:*)",
+    "Bash(pdftotext:*)"
+  ],
+  "disallowed_tools": [
+    "PowerShell"
+  ]
+}
