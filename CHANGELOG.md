@@ -1,10 +1,18 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 — 2026-11-07
 
-- Activate repository rules requiring PRs for `main` and the default branch, with no bypass actors, no force pushes or deletion, resolved review threads and linear history. Retain squash-only merging and disabled auto-merge/Actions.
-- Document explicit user instructions before an agent merges a PR. Keep required reviewer approvals at zero for the single-maintainer setup, and record that shared GitHub credentials cannot enforce a human/agent distinction.
-- Add local checkout safeguards against implicit pushes and direct pushes to `main`/`master`. Verification reads the active server rules and exercises the local push guard without attempting a remote `main` update.
+**Breaking:** the six `deep-research*` skills are now one skill, `evidrill`. The old name collided with Claude Code's built-in `deep-research` skill. `-comu` is now `-community`, and studies use record schema 3; 0.1.x studies are not migrated.
+
+- Install from Claude Code with `/plugin marketplace add darve1/evidrill-research`, then `/plugin install evidrill@evidrill`. The Python installer still covers Codex. `--remove-legacy` deletes unmodified 0.1.x files and keeps anything you changed.
+- `snapshot --url` downloads the source itself, records it as `helper_fetched`, and extracts text from HTML (and from PDF when `pdftotext` is available). A tool summary is recorded as `agent_written`, not as the source.
+- Quote checks fold only layout differences (whitespace, line-break hyphens, curly quotes, ligatures). Quotes need at least 20 characters (10 for CJK) unless a reason is given, and the surrounding context is shown with every quote.
+- Every key claim needs at least two distinct counterevidence searches. Abstract-only support for a key claim stays pending.
+- Record commands (`add`, `set-claim`, `review`, `counter`, `origin`, `stress-review`) validate the whole study and refuse a change that would introduce an error. `add --json-file` accepts a JSON array or JSON Lines and writes all rows or none. Only replaced versions go to `history.jsonl`.
+- Reviews record their method (`self`, `fresh_agent`, `human`). Origins can carry design, population, n, effect and CI; sources can carry screening decisions and queries a result count.
+- The instructions are rewritten in English at half their former size (39 KB to 20 KB). Answers now open with the answer, the confidence and the largest weakness, and say what was not done.
+- Add a behavioral evaluation harness with fictional and real-topic tasks and blind grading; see `evals/results.md`.
+- Add a pull-request workflow for unit tests (it runs once Actions is enabled).
 
 ## 0.1.1 — 2026-11-06
 

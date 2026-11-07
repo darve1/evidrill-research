@@ -1,49 +1,24 @@
 # Evidrill Research
 
-**원문을 추적하고, 반대 근거를 확인하고, 결론이 무엇에 의존하는지 보여주는 조사 스킬.**
+**원문을 추적하고, 반대 근거로 결론을 시험하는 조사 스킬.**
 
-[GitHub 저장소](https://github.com/darve1/evidrill-research) · [English](README.md) · [MIT License](LICENSE)
+Claude Code와 Codex에서 쓰는 조사 스킬임. 답을 좌우하는 핵심 주장 몇 개에 대해 다음을 함께 남김.
+- 원문 보존본과 실제로 읽은 구절
+- 핵심 주장마다 최소 2회의 반대 근거 검색
+- 근거의 출처 하나를 뺐을 때 무엇이 남는지
 
-프로젝트 이름은 Evidrill Research이며, 설치 후 선택할 스킬 이름은 아래의 `deep-research` 계열이다.
+[English](README.md) · [평가 결과](evals/results.md) · [합성 예제](examples/README.md) · [MIT License](LICENSE)
 
-**Codex와 Claude Code가 같은 스킬 파일과 조사 규칙을 사용한다.**
+## 설치
 
-스킬 목록에서 이름을 선택한 뒤 평소처럼 “이걸로 자료조사해줘”라고 요청하면 된다.
-
-| 선택할 이름 | 조사 범위 |
-| --- | --- |
-| `deep-research` | **기본:** 논문·학술지·학회·학술 문헌 |
-| `deep-research-tech` | 학술 + 기술·오픈소스 |
-| `deep-research-tech-only` | 기술·오픈소스만 |
-| `deep-research-comu` | 학술 + 커뮤니티 |
-| `deep-research-comu-only` | 커뮤니티만 |
-| `deep-research-all` | 학술 + 기술·오픈소스 + 범용 웹 + 커뮤니티 |
-
-Codex에서는 아래처럼 `$이름`으로, Claude Code에서는 같은 이름에 `/`를 붙여 호출한다. 스킬 선택기가 있는 앱에서는 목록에서 선택해도 된다.
+**Claude Code:**
 
 ```text
-$deep-research 이 주제의 연구 결과와 반대 근거를 조사해줘.
-$deep-research-tech 이 방법의 연구 근거와 실제 구현 조건을 조사해줘.
-$deep-research-tech-only 이 주제를 기술·오픈소스 자료만으로 조사해줘.
-$deep-research-comu 학술 문헌과 커뮤니티 경험을 함께 조사해줘.
-$deep-research-comu-only 커뮤니티 토론·후기·Q&A만 조사해줘.
-$deep-research-all 이 주제를 학술·기술·일반 웹·커뮤니티에서 폭넓게 조사해줘.
+/plugin marketplace add darve1/evidrill-research
+/plugin install evidrill@evidrill
 ```
 
-기본 스킬에 `-tech`, `-tech-only`, `-comu`, `-comu-only`, `-all`을 붙여도 같다. `-tech -comu`는 학술+기술+커뮤니티다. `-only` 옵션은 다른 범위 옵션과 함께 쓸 수 없다. `모드: technical|general|community`로 단독 범위를 지정할 수도 있다. `-all`은 네 자료 경로를 포함하며, 접근하지 못한 자료와 검색하지 못한 경로도 표시한다. 인터넷 전체를 빠짐없이 수집한다는 약속은 아니다.
-
-## 무엇을 남기는가
-
-- 주장별 지지·반대 근거와 실제 원문 위치/판본/보존본.
-- 같은 연구를 재인용한 출판물, 서로 다른 연구, 공유 데이터 의존성의 구분.
-- 특정 원천을 제외했을 때 남는 근거와 작성자의 실제 검토 판단.
-- 적용 조건·미확인 사항·결론을 바꿀 다음 확인을 담은 결론 카드.
-
-[가상 사례](examples/README.md)는 입력과 기대 판단을 공개한다. 권위 있는 출처, 정확한 인용, 원장 검사 통과는 의미적 진실성이나 현실 실행 성공의 인증이 아니다. 자동 helper는 `truth_certified:false`를 유지한다.
-
-## 설치와 실행
-
-저장소를 내려받는다.
+**Codex 또는 플러그인을 쓰지 않는 Claude Code** (Python 3.10 이상):
 
 ```text
 git clone https://github.com/darve1/evidrill-research.git
@@ -51,37 +26,67 @@ cd evidrill-research
 python -X utf8 scripts/install_skills.py --target both
 ```
 
-`--target codex`, `--target claude`, `--target both` 중 고른다. 기본 경로는 Codex `~/.agents/skills`, Claude Code `~/.claude/skills`다. 설치기는 **여섯 폴더를 나란히** 복사하고 해시를 확인한다. `--dry-run`은 파일을 쓰지 않고 설치 계획만 검사한다. 기존 파일 내용이 다르면 복사 전에 중단하며, 다른 스킬이나 전역 설정을 바꾸지 않는다.
+0.1.x의 `deep-research*` 폴더를 쓰고 있었다면 `--remove-legacy`를 붙이세요. 옛 이름은 Claude Code에 내장된 `deep-research` 스킬과 이름이 겹쳤음. 수정하지 않은 0.1.x 파일만 지우고, 고친 파일은 남겨 둠. 자세한 내용은 [호환성 문서](docs/COMPATIBILITY.md)를 보세요.
 
-기존 Codex 설치가 `~/.codex/skills`에 있다면 `--target codex --skills-dir "~/.codex/skills"`로 그 경로를 사용하고 Claude는 별도로 설치한다. 두 Codex 경로에 같은 이름을 중복 설치하지 않는다. 기존 설치 갱신·프로젝트별 설치·검증 범위는 [호환성 안내](docs/COMPATIBILITY.md)를 참고한다.
+## 사용
 
-스킬이 보이지 않으면 새 세션에서 다음처럼 호출한다.
-
-| 환경 | 입력 예시 |
-| --- | --- |
-| Codex | `$deep-research 이 주제를 논문·문헌 중심으로 조사해줘.` |
-| Claude Code | `/deep-research 이 주제를 논문·문헌 중심으로 조사해줘.` |
-| Claude Code 전체 범위 | `/deep-research -all 이 주제를 모든 자료 경로로 조사해줘.` |
-
-`/deep-research-tech-only`, `/deep-research-comu`, `/deep-research-comu-only` 등 여섯 진입점과 범위 옵션은 두 환경에서 같다.
-
-helper는 Python 3.10+와 표준 라이브러리를 사용한다. 모델·검색은 실행 환경의 기존 도구를 사용하며 새 API 키를 요구하지 않는다. 기존 모델/검색 서비스의 비용까지 무료라는 뜻은 아니다.
-
-```powershell
-python -X utf8 skills/deep-research/scripts/research_ledger.py init --root research/my-study -all --question "조사 질문"
-python -X utf8 skills/deep-research/scripts/research_ledger.py stress --root research/my-study
-python -X utf8 skills/deep-research/scripts/research_ledger.py check --root research/my-study
-python -X utf8 skills/deep-research/scripts/research_ledger.py render --root research/my-study
+```text
+/evidrill 시간 제한 섭식이 같은 칼로리 제한보다 체중 감량에 더 효과적인지 조사해줘
+/evidrill -tech-only uv가 pip보다 정말 10~100배 빠른지 확인해줘
+$evidrill -all 이 방법을 지금 도입해도 되는지 조사해줘
 ```
 
-초기화한 빈 연구는 미완료다. 스킬이 [기록 계약](skills/deep-research/references/records.md)에 따라 실제 수집·검토 기록을 작성한다. `check/stress/render` 종료 코드: 0 기록상 완료, 1 기록 오류, 2 미검토/미해결. 코드2인 정당한 부분 결과도 전달할 수 있다. helper 자체는 웹 검색이나 자동 의미 판정을 하지 않는다.
+Claude Code에서는 `/`, Codex에서는 `$`를 붙이세요. 옵션별 조사 범위는 다음과 같음.
 
-## 개발과 검증
+| 옵션 | 조사 범위 |
+| --- | --- |
+| 없음 | 학술 문헌 |
+| `-tech` | 학술 문헌 + 공식 문서·릴리스·코드 |
+| `-community` | 학술 문헌 + 포럼·사용자 후기 |
+| `-all` | 위 전부 + 일반 웹 |
+| `-tech-only`, `-community-only` | 해당 경로만 |
 
-```powershell
+답변은 질문한 언어로 나옴.
+
+답변 첫 세 줄은 결론, 기록이 허용하는 확신 수준, 가장 큰 약점임. 그 뒤에 주장 카드, 하지 않은 일, 분모를 밝힌 검색 범위가 이어짐. 실제 평가 실행에서 나온 답변의 첫 부분:
+
+> **결론:** 같은 수준의 칼로리 제한보다 시간 제한 섭식(TRE)이 체중 감량에 더 효과적이라는 근거는 없음. 읽은 직접 비교 RCT 2건에서는 유의한 차이가 없었음.
+> **확신 수준:** 낮음~중간. 핵심 RCT 2건은 전문이 아니라 초록만 읽었고, 두 시험 모두 표본이 작음.
+> **가장 큰 약점:** 직접 비교 시험이 작고 비맹검임. 신뢰구간이 넓어서 수 kg의 차이도 배제하지 못함.
+
+## 효과가 있나
+
+칸마다 Claude Code를 Sonnet으로 한 번씩 돌린 결과임. 실제 주제는 블라인드로 채점함. 답변 순서를 섞고, 핵심 주장을 원문과 대조하는 방식임. 방법과 한계는 [평가 결과](evals/results.md)를 보세요.
+
+| | 스킬 없음 | 0.1.1 | 0.2.0 |
+| --- | --- | --- | --- |
+| 쉬운 가상 자료 (채점표, 13점 만점) | 12.5 | 13 | 12.5 |
+| 어려운 가상 자료 (채점표, 13점 만점) | 9 | 9 | 10.5 (최종 답변 형식으로 재실행: 11.5) |
+| 실제 주제: 시간 제한 섭식 (블라인드 순위) | 3위 | 2위 | 1위 |
+| 실제 주제: uv와 pip (블라인드 순위) | 2위 | 3위 | 1위 |
+| 실제 주제에서 확인한 주장 중 완전히 맞은 것 | 3/10 | 8/10 | 9/10 |
+| 출처를 잘못 붙이거나 수치를 섞은 곳 | 2 | 3 | 0 |
+| 실행 1회 비용 | $0.10–0.16 | $0.31–0.68 | $0.57–1.18 |
+
+스킬 없이 답할 때와 비교하면 비용은 약 6~8배, 시간은 2.5~7배 듦. 쉬운 가상 자료에서는 나아지지 않음. 칸마다 한 번씩만 돌렸으므로 작은 차이는 확정할 수 없음.
+
+## 무엇을 기록하나
+
+조사마다 작업 중인 프로젝트 안에 폴더가 하나 생기고, 다음을 기록함.
+- 실제로 실행한 검색(실패 포함)
+- 도우미가 `snapshot --url`로 직접 받은 원문 보존본
+- 보존본과 대조한 인용 구절과 앞뒤 문맥
+- 주장, 그리고 주장-구절 쌍마다의 판정
+- 핵심 주장별 반대 근거 검색
+- 출처 제거 검토
+
+도우미는 바뀌는 내용마다 검사하고, 오류를 만드는 변경은 거부함. 다만 의미를 판정하지는 않음. `check`의 종료 코드는 기록된 검토가 끝났으면 0, 기록 오류면 1, 검토가 남았으면 2임. **모든 출력에 `truth_certified:false`가 붙음.** 기록 형식은 [records.md](skills/evidrill/references/records.md), 예시는 [합성 예제](examples/README.md)를 보세요.
+
+## 개발
+
+```text
 python -X utf8 -m unittest discover -s tests -v
 python -X utf8 scripts/verify_project.py
-python -X utf8 scripts/verify_project.py --installed-skill "개인-스킬-폴더/deep-research"
 ```
 
-현재 원본은 [skills/deep-research](skills/deep-research/SKILL.md)와 다섯 추가 진입점이다. [기여 안내](CONTRIBUTING.md), [변경 이력](CHANGELOG.md), [공개 범위와 검증](docs/PUBLICATION.md)을 참고한다. 공개본은 MIT 라이선스이며, 외부 원문 스냅샷과 개인 작업 기록은 포함하지 않는다. GitHub Actions는 비활성화하고 검증은 로컬에서 수행한다.
+[CONTRIBUTING.md](CONTRIBUTING.md), [CHANGELOG.md](CHANGELOG.md), [평가 하네스](evals/README.md), [공개 범위](docs/PUBLICATION.md), [설계 근거](docs/PROVENANCE.md)를 함께 보세요.
